@@ -211,7 +211,7 @@ ggplot(df.data.naFilled.mean, aes(x=TimeInterval, y=MeanSteps)) +
     geom_line() +
     xlab("Interval") +
     ylab("Average Steps") +
-    ggtitle(expression("Average Step by Intervals across Weekday and Weekend")) + 
+    ggtitle(expression("Average Step by Intervals across Weekdays and Weekend")) + 
     scale_x_datetime(labels = date_format("%H:%M"),breaks = "2 hour") +
     facet_grid(Cat~ .)
 ```
