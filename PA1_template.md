@@ -16,7 +16,17 @@ df.data$Date <- as.POSIXct(as.character(df.data$date), format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-The below R code will produce a histogram that illustrates the total steps taken per day. Missing values are removed.
+The below R code calculates the total number of steps taken per day. Missing values are removed.
+
+
+```r
+# sum steps by Date and name the sum column 'TotalSteps' 
+df.totalSteps.day.rmNA <-with(df.data, aggregate(steps, by=list(Date = Date), FUN=sum, na.rm=TRUE))
+
+names(df.totalSteps.day.rmNA)[2] <- "TotalSteps"
+```
+
+The below R code produces a histogram that illustrates the total number of steps taken per day.
 
 
 ```r
@@ -28,11 +38,6 @@ library("ggplot2")
 ```
 
 ```r
-# sum steps by Date and name the sum column 'TotalSteps' 
-df.totalSteps.day.rmNA <-with(df.data, aggregate(steps, by=list(Date = Date), FUN=sum, na.rm=TRUE))
-
-names(df.totalSteps.day.rmNA)[2] <- "TotalSteps"
-
 # produce the histogram
 ggplot(data=df.totalSteps.day.rmNA) + 
     geom_histogram(aes(x=Date, y=TotalSteps), fill="blue", stat="identity")+
@@ -41,7 +46,7 @@ ggplot(data=df.totalSteps.day.rmNA) +
     ggtitle(expression("Total Steps per Day")) 
 ```
 
-![](figure/unnamed-chunk-2-1.png) 
+![](figure/unnamed-chunk-3-1.png) 
 
 Mean total steps per day:
 
@@ -90,7 +95,7 @@ df.meanSteps.interval.rmNA$TimeInterval <- strptime(
 with(df.meanSteps.interval.rmNA, plot(TimeInterval, MeanSteps, type="l", ylab=expression("Average steps across all days"),xlab="Interval", main = expression("Average Steps by Interval")))
 ```
 
-![](figure/unnamed-chunk-5-1.png) 
+![](figure/unnamed-chunk-6-1.png) 
 
 Highest number of mean steps is observed at this 5min interval:
 
@@ -106,11 +111,11 @@ df.meanSteps.interval.rmNA[which(df.meanSteps.interval.rmNA[,2] == max(df.meanSt
 
 ## Imputing missing values
 
-Below R code calculates the total NA values in the dataset
+Below R code calculates the total number of rows with NA values in the dataset
 
 
 ```r
-sum(is.na(df.data$steps))# shows NA
+sum(is.na(df.data$steps))# shows count of NA
 ```
 
 ```
@@ -144,7 +149,7 @@ ggplot(df.data.naFilled.sum) +
     ggtitle(expression("Total Steps per Day")) 
 ```
 
-![](figure/unnamed-chunk-8-1.png) 
+![](figure/unnamed-chunk-9-1.png) 
 
 Mean total steps after imputing missing values
 
@@ -168,11 +173,11 @@ median(df.data.naFilled.sum$TotalSteps)
 ```
 
 
-After imputing missing values, the mean and median of average steps taken converged to the same value.
+After imputing missing values, the mean and median of total steps increased from previous estimates. The mean and median of total steps converged to the same value.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Below is the R code which creates the 'Weekday' and 'Weekend' category (Cat) and the line graphs which illustrate the difference in mean steps taken between weekday and weekend.
+Below is the R code which creates the 'weekday' or 'weekend' factor column  (Cat) and the line graphs which illustrate the difference in mean steps taken between weekday and weekend.
 
 
 ```r
@@ -180,7 +185,7 @@ Below is the R code which creates the 'Weekday' and 'Weekend' category (Cat) and
 df.data.naFilled["Cat"] <- NA
 
 df.data.naFilled$Cat <- ifelse (weekdays(df.data.naFilled$Date) %in% c("Saturday", "Sunday"), 
-                                "Weekend", "Weekday")
+                                "weekend", "weekday")
 
 df.data.naFilled$Cat <- as.factor(df.data.naFilled$Cat)
 
@@ -211,6 +216,6 @@ ggplot(df.data.naFilled.mean, aes(x=TimeInterval, y=MeanSteps)) +
     facet_grid(Cat~ .)
 ```
 
-![](figure/unnamed-chunk-11-1.png) 
+![](figure/unnamed-chunk-12-1.png) 
 
 From the plot above, in general, it can be observed that less steps are taken over weekend. 

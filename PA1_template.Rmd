@@ -21,15 +21,22 @@ df.data$Date <- as.POSIXct(as.character(df.data$date), format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-The below R code will produce a histogram that illustrates the total steps taken per day. Missing values are removed.
+The below R code calculates the total number of steps taken per day. Missing values are removed.
 
-```{r fig.path='figure/'}
-library("ggplot2")
+```{r}
 
 # sum steps by Date and name the sum column 'TotalSteps' 
 df.totalSteps.day.rmNA <-with(df.data, aggregate(steps, by=list(Date = Date), FUN=sum, na.rm=TRUE))
 
 names(df.totalSteps.day.rmNA)[2] <- "TotalSteps"
+
+
+```
+
+The below R code produces a histogram that illustrates the total number of steps taken per day.
+
+```{r fig.path='figure/'}
+library("ggplot2")
 
 # produce the histogram
 ggplot(data=df.totalSteps.day.rmNA) + 
@@ -89,10 +96,10 @@ df.meanSteps.interval.rmNA[which(df.meanSteps.interval.rmNA[,2] == max(df.meanSt
 
 ## Imputing missing values
 
-Below R code calculates the total NA values in the dataset
+Below R code calculates the total number of rows with NA values in the dataset
 
 ```{r}
-sum(is.na(df.data$steps))# shows NA
+sum(is.na(df.data$steps))# shows count of NA
 
 ```
 
@@ -136,11 +143,11 @@ median(df.data.naFilled.sum$TotalSteps)
 ```
 
 
-After imputing missing values, the mean and median of average steps taken converged to the same value.
+After imputing missing values, the mean and median of total steps increased from previous estimates. The mean and median of total steps converged to the same value.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Below is the R code which creates the 'Weekday' and 'Weekend' category (Cat) and the line graphs which illustrate the difference in mean steps taken between weekday and weekend.
+Below is the R code which creates the 'weekday' or 'weekend' factor column  (Cat) and the line graphs which illustrate the difference in mean steps taken between weekday and weekend.
 
 ```{r fig.path='figure/'}
 
@@ -148,7 +155,7 @@ Below is the R code which creates the 'Weekday' and 'Weekend' category (Cat) and
 df.data.naFilled["Cat"] <- NA
 
 df.data.naFilled$Cat <- ifelse (weekdays(df.data.naFilled$Date) %in% c("Saturday", "Sunday"), 
-                                "Weekend", "Weekday")
+                                "weekend", "weekday")
 
 df.data.naFilled$Cat <- as.factor(df.data.naFilled$Cat)
 
