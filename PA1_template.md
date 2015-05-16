@@ -28,10 +28,12 @@ library("ggplot2")
 ```
 
 ```r
+# sum steps by Date and name the sum column 'TotalSteps' 
 df.totalSteps.day.rmNA <-with(df.data, aggregate(steps, by=list(Date = Date), FUN=sum, na.rm=TRUE))
 
 names(df.totalSteps.day.rmNA)[2] <- "TotalSteps"
 
+# produce the histogram
 ggplot(data=df.totalSteps.day.rmNA) + 
     geom_histogram(aes(x=Date, y=TotalSteps), fill="blue", stat="identity")+
     xlab("Date") +
@@ -39,7 +41,7 @@ ggplot(data=df.totalSteps.day.rmNA) +
     ggtitle(expression("Total Steps per Day")) 
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+![](figure/unnamed-chunk-2-1.png) 
 
 Mean total steps per day:
 
@@ -64,10 +66,11 @@ median(df.totalSteps.day.rmNA$TotalSteps)
 ```
 ## What is the average daily activity pattern?
 
-The below R code create a line graph which illustrates the daily activity pattern (mean steps by 5-minute interval). Missing values are removed.
+The below R code creates a line graph which illustrates the daily activity pattern (mean steps by 5-minute interval). Missing values are removed.
 
 
 ```r
+# average the steps by interval and name the average column as 'MeanSteps'
 df.meanSteps.interval.rmNA <-with(df.data, aggregate(steps, by=list(Interval = interval), 
                                                      FUN=mean, na.rm=TRUE))
 
@@ -82,11 +85,12 @@ df.meanSteps.interval.rmNA["TimeInterval"] <- NA
 df.meanSteps.interval.rmNA$TimeInterval <- strptime(
     sprintf("%04d", df.meanSteps.interval.rmNA$Interval),"%H%M")
 
+# produce the line graph
 
 with(df.meanSteps.interval.rmNA, plot(TimeInterval, MeanSteps, type="l", ylab=expression("Average steps across all days"),xlab="Interval", main = expression("Average Steps by Interval")))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![](figure/unnamed-chunk-5-1.png) 
 
 Highest number of mean steps is observed at this 5min interval:
 
@@ -126,12 +130,13 @@ v_na.Steps <- which(is.na(df.data.naFilled$steps)== TRUE)
 df.data.naFilled[v_na.Steps,2] <- df.data.naFilled[v_na.Steps,5]
 
 
-# sum up steps by Date
+# sum up steps by Date and name the sum column 'TotalSteps'
 df.data.naFilled.sum <-with(df.data.naFilled, aggregate(steps, by=list(Date = Date), 
                                                  FUN=sum))
 
 names(df.data.naFilled.sum)[2] <- "TotalSteps"
 
+# produce the histogram
 ggplot(df.data.naFilled.sum) + 
     geom_histogram(aes(x=Date, y=TotalSteps), fill="green", stat="identity")+
     xlab("Date") +
@@ -139,7 +144,7 @@ ggplot(df.data.naFilled.sum) +
     ggtitle(expression("Total Steps per Day")) 
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+![](figure/unnamed-chunk-8-1.png) 
 
 Mean total steps after imputing missing values
 
@@ -167,21 +172,27 @@ After imputing missing values, the mean and median of average steps taken conver
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-From the code below, weekend seems to see lesser steps taken.
+Below is the R code which creates the 'Weekday' and 'Weekend' category (Cat) and the line graphs which illustrate the difference in mean steps taken between weekday and weekend.
 
 
 ```r
+# create a new factor column Cat for weekend or weekday factors
 df.data.naFilled["Cat"] <- NA
 
-df.data.naFilled$Cat <- ifelse (weekdays(df.data.naFilled$Date) %in% c("Saturday", "Sunday"), "Weekend", "Weekday")
+df.data.naFilled$Cat <- ifelse (weekdays(df.data.naFilled$Date) %in% c("Saturday", "Sunday"), 
+                                "Weekend", "Weekday")
 
+df.data.naFilled$Cat <- as.factor(df.data.naFilled$Cat)
+
+# average steps by interval and name the column 'MeanSteps'
 df.data.naFilled.mean <-with(df.data.naFilled, aggregate(steps, by=list(TimeInterval = interval, Cat = Cat), 
                                                         FUN=mean))
 
-df.data.naFilled.mean$TimeInterval <- strptime(sprintf("%04d", df.data.naFilled.mean$TimeInterval), "%H%M")
-
 names(df.data.naFilled.mean)[3] <- "MeanSteps"
 
+df.data.naFilled.mean$TimeInterval <- strptime(sprintf("%04d", df.data.naFilled.mean$TimeInterval), "%H%M")
+
+# load scales library to manipulate x scales
 library("scales")
 ```
 
@@ -190,6 +201,7 @@ library("scales")
 ```
 
 ```r
+# plot the 2 line graphs
 ggplot(df.data.naFilled.mean, aes(x=TimeInterval, y=MeanSteps)) +
     geom_line() +
     xlab("Interval") +
@@ -199,4 +211,6 @@ ggplot(df.data.naFilled.mean, aes(x=TimeInterval, y=MeanSteps)) +
     facet_grid(Cat~ .)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+![](figure/unnamed-chunk-11-1.png) 
+
+From the plot above, in general, it can be observed that less steps are taken over weekend. 
