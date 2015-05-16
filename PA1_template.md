@@ -81,7 +81,6 @@ df.meanSteps.interval.rmNA <-with(df.data, aggregate(steps, by=list(Interval = i
 
 names(df.meanSteps.interval.rmNA)[2] <- "MeanSteps"
 
-
 # create a interval column of Datetime class
 
 df.meanSteps.interval.rmNA["TimeInterval"] <- NA
@@ -211,7 +210,7 @@ ggplot(df.data.naFilled.mean, aes(x=TimeInterval, y=MeanSteps)) +
     geom_line() +
     xlab("Interval") +
     ylab("Average Steps") +
-    ggtitle(expression("Average Step by Intervals across Weekdays and Weekend")) + 
+    ggtitle(expression("Average Step by Intervals across Weekday and Weekend")) + 
     scale_x_datetime(labels = date_format("%H:%M"),breaks = "2 hour") +
     facet_grid(Cat~ .)
 ```
